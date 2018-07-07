@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.mapper.MarketMapper">
+<!--登录  -->
+<select id="getUser" resultType="com.baidu.entity.User">
+	select * from c_user where name=#{name} and pwd=#{pwd}
+</select>
+<!--列表 -->
+<select id="getMarketCount"  resultType="int">
+   select count(*) from c_suppermarket WHERE bname like '%${value}%'
+</select>
+<select id="getMarkeList" resultType="com.baidu.entity.Market">
+   select s1.bid,s1.bname,s1.sid,s2.supplier,s1.price,s1.payment,s1.datea from 
+	c_suppermarket s1 LEFT JOIN c_supplier s2
+	on s1.sid=s2.sid  
+	
+	 <where>
+	  <if test="page.mohu!=null and page.mohu!=''">
+	  	and  bname like concat ('%',#{page.mohu},'%')
+	  </if>
+	  <if test="market.sid!=null and market.sid!=''">
+	   and s1.sid=#{market.sid}
+	  </if>
+	  <if test="market.payment!=null and market.payment!=''">
+	   and s1.payment=#{market.payment}
+	  </if>
+     </where>
+    limit  #{page.startRecord},#{page.pageSize}   
+</select>
+
+ <!--添加  -->
+ <select id="getBname" resultType="com.baidu.entity.Market">
+   select bid,bname from c_suppermarket
+ </select>
+ <select id="getSupplier" resultType="com.baidu.entity.Market">
+   select * from c_supplier
+ </select>
+  <insert id="toAddMarket">
+     insert into c_suppermarket(bname,sid,price,payment,datea)  values(#{bname},#{sid},#{price},#{payment},#{datea})
+  </insert>
+  
+  <!--删除  -->
+  <delete id="toDelete">
+    delete from c_suppermarket where bid=#{bid}
+  </delete>
+</mapper>
